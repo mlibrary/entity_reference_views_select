@@ -1,10 +1,1 @@
-name: 'Entity Reference Views Select'
-type: module
-description: 'Entity Reference Views displayed as a select list, checkboxes or radio buttons in forms'
-# version: VERSION
-# core: 8.x
-
-
-version: '8.0.0-alpha'
-core: '8.x'
-project: 'drupal'
+name = Entity Reference Views Select
