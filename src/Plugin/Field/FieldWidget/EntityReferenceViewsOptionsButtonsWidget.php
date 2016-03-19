@@ -1,7 +1,6 @@
 <?php
 
 /**
- * @file
  * Contains \Drupal\entity_reference_views_select\Plugin\Field\FieldWidget\EntityReferenceViewsOptionsButtonsWidget.
  */
 
