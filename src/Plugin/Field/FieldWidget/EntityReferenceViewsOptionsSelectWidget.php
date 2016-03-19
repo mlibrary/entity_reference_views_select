@@ -1,9 +1,5 @@
 <?php
 
-/**
- * Contains \Drupal\entity_reference_views_select\Plugin\Field\FieldWidget\EntityReferenceViewsOptionsSelectWidget.
- */
-
 namespace Drupal\entity_reference_views_select\Plugin\Field\FieldWidget;
 
 use Drupal\Core\Field\Plugin\Field\FieldWidget\OptionsWidgetBase;
