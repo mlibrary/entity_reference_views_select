@@ -2,10 +2,14 @@
 
 namespace Drupal\entity_reference_views_select\Plugin\Field\FieldWidget;
 
+use Drupal\Core\Entity\EntityStorageInterface;
+use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\Plugin\Field\FieldWidget\OptionsWidgetBase;
 use Drupal\Component\Utility\Html;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Render\RendererInterface;
+use Drupal\views\ViewExecutableFactory;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 
@@ -24,7 +28,7 @@ use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 class EntityReferenceViewsOptionsSelectWidget extends OptionsWidgetBase implements ContainerFactoryPluginInterface {
 
   /**
-   * @var Renderer $renderer
+   * @var RendererInterface $renderer
    */
   protected $renderer;
 
@@ -34,7 +38,7 @@ class EntityReferenceViewsOptionsSelectWidget extends OptionsWidgetBase implemen
   protected $view_factory;
 
   /**
-   * @var View $view_loader
+   * @var EntityStorageInterface $view_loader
    */
   protected $view_loader;
 
@@ -43,25 +47,26 @@ class EntityReferenceViewsOptionsSelectWidget extends OptionsWidgetBase implemen
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
     return new static(
-      $container->get('entity.manager')->getStorage('view'),
-      $container->get('views.executable'),
-      $container->get('renderer'),
       $plugin_id,
       $plugin_definition,
       $configuration['field_definition'],
       $configuration['settings'],
-      $configuration['third_party_settings']
+      $configuration['third_party_settings'],
+      $container->get('entity_type.manager')->getStorage('view'),
+      $container->get('views.executable'),
+      $container->get('renderer')
     );
   }
 
   /**
    * {@inheritdoc}
    */
-  public function __construct($view_loader, $view_factory, $renderer, $plugin_id, $plugin_definition, FieldDefinitionInterface $field_definition, array $settings, array $third_party_settings) {
+  public function __construct($plugin_id, $plugin_definition, FieldDefinitionInterface $field_definition, array $settings, array $third_party_settings, EntityStorageInterface $view_loader, ViewExecutableFactory $view_factory, RendererInterface $renderer) {
+    parent::__construct($plugin_id, $plugin_definition, $field_definition, $settings, $third_party_settings);
+
     $this->view_loader = $view_loader;
     $this->view_factory = $view_factory;
     $this->renderer = $renderer;
-    parent::__construct($plugin_id, $plugin_definition, $field_definition, $settings, $third_party_settings);
   }
 
   /**
@@ -76,7 +81,8 @@ class EntityReferenceViewsOptionsSelectWidget extends OptionsWidgetBase implemen
       $view = $this->view_factory->get($this->view_loader->load($this->getFieldSettings()['handler_settings']['view']['view_name']));
       $view->execute($this->getFieldSettings()['handler_settings']['view']['display_name']);
       foreach ($view->result as $row) {
-        $options[$row->_entity->id()] = $this->renderer->render($view->style_plugin->view->rowPlugin->render($row));
+        $row_output = $view->style_plugin->view->rowPlugin->render($row);
+        $options[$row->_entity->id()] = $this->renderer->render($row_output);
       }
     }
 
