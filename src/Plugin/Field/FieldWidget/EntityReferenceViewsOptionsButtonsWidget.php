@@ -27,19 +27,25 @@ use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 class EntityReferenceViewsOptionsButtonsWidget extends OptionsWidgetBase implements ContainerFactoryPluginInterface {
 
   /**
-   * @var RendererInterface $renderer
+   * The renderer.
+   *
+   * @var \Drupal\Core\Render\RendererInterface
    */
   protected $renderer;
 
   /**
-   * @var ViewExecutableFactory $view_factory
+   * The exec factory.
+   *
+   * @var \Drupal\views\ViewExecutableFactory
    */
-  protected $view_factory;
+  protected $viewFactory;
 
   /**
-   * @var EntityStorageInterface $view_loader
+   * The loader.
+   *
+   * @var \Drupal\Core\Entity\EntityStorageInterface
    */
-  protected $view_loader;
+  protected $viewLoader;
 
   /**
    * {@inheritdoc}
@@ -63,8 +69,8 @@ class EntityReferenceViewsOptionsButtonsWidget extends OptionsWidgetBase impleme
   public function __construct($plugin_id, $plugin_definition, FieldDefinitionInterface $field_definition, array $settings, array $third_party_settings, EntityStorageInterface $view_loader, ViewExecutableFactory $view_factory, RendererInterface $renderer) {
     parent::__construct($plugin_id, $plugin_definition, $field_definition, $settings, $third_party_settings);
 
-    $this->view_loader = $view_loader;
-    $this->view_factory = $view_factory;
+    $this->viewLoader = $view_loader;
+    $this->viewFactory = $view_factory;
     $this->renderer = $renderer;
   }
 
@@ -76,7 +82,7 @@ class EntityReferenceViewsOptionsButtonsWidget extends OptionsWidgetBase impleme
     $options = $this->getOptions($items->getEntity());
     $selected = $this->getSelectedOptions($items);
     if ($this->getFieldSettings()['handler'] == 'views') {
-      $view = $this->view_factory->get($this->view_loader->load($this->getFieldSettings()['handler_settings']['view']['view_name']));
+      $view = $this->viewFactory->get($this->viewLoader->load($this->getFieldSettings()['handler_settings']['view']['view_name']));
       $view->execute($this->getFieldSettings()['handler_settings']['view']['display_name']);
       foreach ($view->result as $row) {
         $row_output = $view->style_plugin->view->rowPlugin->render($row);
@@ -86,25 +92,25 @@ class EntityReferenceViewsOptionsButtonsWidget extends OptionsWidgetBase impleme
     // If required and there is one single option, preselect it.
     if ($this->required && count($options) == 1) {
       reset($options);
-      $selected = array(key($options));
+      $selected = [key($options)];
     }
 
     if ($this->multiple) {
-      $element += array(
+      $element += [
         '#type' => 'checkboxes',
         '#default_value' => $selected,
         '#options' => $options,
-      );
+      ];
     }
     else {
-      $element += array(
+      $element += [
         '#type' => 'radios',
         // Radio buttons need a scalar value. Take the first default value, or
         // default to NULL so that the form element is properly recognized as
         // not having a default value.
         '#default_value' => $selected ? reset($selected) : NULL,
         '#options' => $options,
-      );
+      ];
     }
 
     return $element;

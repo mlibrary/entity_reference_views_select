@@ -28,19 +28,25 @@ use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 class EntityReferenceViewsOptionsSelectWidget extends OptionsWidgetBase implements ContainerFactoryPluginInterface {
 
   /**
-   * @var RendererInterface $renderer
+   * The renderer.
+   *
+   * @var \Drupal\Core\Render\RendererInterface
    */
   protected $renderer;
 
   /**
-   * @var ViewExecutableFactory $view_factory
+   * The exec factory.
+   *
+   * @var \Drupal\views\ViewExecutableFactory
    */
-  protected $view_factory;
+  protected $viewFactory;
 
   /**
-   * @var EntityStorageInterface $view_loader
+   * The loader.
+   *
+   * @var \Drupal\Core\Entity\EntityStorageInterface
    */
-  protected $view_loader;
+  protected $viewLoader;
 
   /**
    * {@inheritdoc}
@@ -64,8 +70,8 @@ class EntityReferenceViewsOptionsSelectWidget extends OptionsWidgetBase implemen
   public function __construct($plugin_id, $plugin_definition, FieldDefinitionInterface $field_definition, array $settings, array $third_party_settings, EntityStorageInterface $view_loader, ViewExecutableFactory $view_factory, RendererInterface $renderer) {
     parent::__construct($plugin_id, $plugin_definition, $field_definition, $settings, $third_party_settings);
 
-    $this->view_loader = $view_loader;
-    $this->view_factory = $view_factory;
+    $this->viewLoader = $view_loader;
+    $this->viewFactory = $view_factory;
     $this->renderer = $renderer;
   }
 
@@ -78,7 +84,7 @@ class EntityReferenceViewsOptionsSelectWidget extends OptionsWidgetBase implemen
     $options = $this->getOptions($items->getEntity());
     $selected = $this->getSelectedOptions($items, $delta);
     if ($this->getFieldSettings()['handler'] == 'views') {
-      $view = $this->view_factory->get($this->view_loader->load($this->getFieldSettings()['handler_settings']['view']['view_name']));
+      $view = $this->viewFactory->get($this->viewLoader->load($this->getFieldSettings()['handler_settings']['view']['view_name']));
       $view->execute($this->getFieldSettings()['handler_settings']['view']['display_name']);
       foreach ($view->result as $row) {
         $row_output = $view->style_plugin->view->rowPlugin->render($row);
@@ -86,13 +92,13 @@ class EntityReferenceViewsOptionsSelectWidget extends OptionsWidgetBase implemen
       }
     }
 
-    $element += array(
+    $element += [
       '#type' => 'select',
       '#options' => $options,
       '#default_value' => $selected,
       // Do not display a 'multiple' select box if there is only one option.
       '#multiple' => $this->multiple && count($this->options) > 1,
-    );
+    ];
 
     return $element;
   }
