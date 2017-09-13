@@ -84,11 +84,13 @@ class EntityReferenceViewsOptionsButtonsWidget extends OptionsWidgetBase impleme
     if ($this->getFieldSettings()['handler'] == 'views') {
       $view = $this->viewFactory->get($this->viewLoader->load($this->getFieldSettings()['handler_settings']['view']['view_name']));
       $view->execute($this->getFieldSettings()['handler_settings']['view']['display_name']);
+      $filter_options = [];
       foreach ($view->result as $row) {
         $row_output = $view->style_plugin->view->rowPlugin->render($row);
-        $options[$row->_entity->id()] = $options[$row->_entity->id()]->create($this->renderer->render($row_output));
+        $filter_options[$row->_entity->id()] = $options[$row->_entity->id()]->create($this->renderer->render($row_output));
       }
     }
+    $options = $filter_options;
     // If required and there is one single option, preselect it.
     if ($this->required && count($options) == 1) {
       reset($options);
