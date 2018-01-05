@@ -85,6 +85,7 @@ class EntityReferenceViewsOptionsSelectWidget extends OptionsWidgetBase implemen
     $selected = $this->getSelectedOptions($items, $delta);
     if ($this->getFieldSettings()['handler'] == 'views') {
       $view = $this->viewFactory->get($this->viewLoader->load($this->getFieldSettings()['handler_settings']['view']['view_name']));
+      $view->setArguments($this->getFieldSettings()['handler_settings']['view']['arguments']);
       $view->execute($this->getFieldSettings()['handler_settings']['view']['display_name']);
       $filter_options = [];
       foreach ($view->result as $row) {
