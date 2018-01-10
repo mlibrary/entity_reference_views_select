@@ -90,8 +90,8 @@ class EntityReferenceViewsOptionsButtonsWidget extends OptionsWidgetBase impleme
         $row_output = $view->style_plugin->view->rowPlugin->render($row);
         $filter_options[$row->_entity->id()] = $options[$row->_entity->id()]->create($this->renderer->render($row_output));
       }
+      $options = $filter_options;
     }
-    $options = $filter_options;
     // If required and there is one single option, preselect it.
     if ($this->required && count($options) == 1) {
       reset($options);
