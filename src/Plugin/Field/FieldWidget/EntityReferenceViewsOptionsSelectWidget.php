@@ -93,6 +93,10 @@ class EntityReferenceViewsOptionsSelectWidget extends OptionsWidgetBase implemen
         $filter_options[$row->_entity->id()] = $this->renderer->render($row_output);
       }
       $options = $filter_options;
+      // Add an empty option if the widget needs one.
+      if ($empty_label = $this->getEmptyLabel()) {
+        $options = ['_none' => $empty_label] + $options;
+      }
     }
 
     $element += [
