@@ -124,7 +124,7 @@ class EntityReferenceViewsOptionsButtonsWidget extends OptionsWidgetBase impleme
    */
   protected function getEmptyLabel() {
     if (!$this->required && !$this->multiple) {
-      return t('N/A');
+      return $this->t('N/A');
     }
   }
 
